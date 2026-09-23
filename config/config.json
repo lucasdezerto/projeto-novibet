@@ -1,0 +1,78 @@
+{
+  "_comentario": "Configuracao do bot. Edite aqui, nao no codigo.",
+
+  "torneios": [
+    {
+      "id": "atp-chengdu",
+      "nome": "ATP Chengdu (CHN)",
+      "circuito": "ATP",
+      "chaves_api": ["tennis_atp_chengdu_open", "tennis_atp_chengdu"],
+      "termos_nome": ["chengdu"]
+    },
+    {
+      "id": "atp-hangzhou",
+      "nome": "ATP Hangzhou (CHN)",
+      "circuito": "ATP",
+      "chaves_api": ["tennis_atp_hangzhou_open", "tennis_atp_hangzhou"],
+      "termos_nome": ["hangzhou"]
+    },
+    {
+      "id": "wta-seoul",
+      "nome": "WTA Seoul (KOR)",
+      "circuito": "WTA",
+      "chaves_api": ["tennis_wta_seoul_open", "tennis_wta_korea_open", "tennis_wta_seoul"],
+      "termos_nome": ["seoul", "korea open"]
+    },
+    {
+      "id": "wta-singapore",
+      "nome": "WTA Singapore (SGP)",
+      "circuito": "WTA",
+      "chaves_api": ["tennis_wta_singapore_open"],
+      "termos_nome": ["singapore"]
+    }
+  ],
+
+  "coleta": {
+    "regioes": ["eu", "uk"],
+    "mercados": ["h2h"],
+    "formato_odds": "decimal",
+    "intervalo_segundos": 120,
+    "limite_creditos_por_execucao": 400,
+    "parar_com_creditos_restantes": 20
+  },
+
+  "referencia": {
+    "_comentario": "Casas usadas como 'preco justo'. A primeira que aparecer no evento e usada.",
+    "casas_preferidas": ["pinnacle", "betfair_ex_eu", "betfair_ex_uk", "smarkets", "matchbook"],
+    "remover_margem": true
+  },
+
+  "casas_monitoradas": {
+    "_comentario": "Lista vazia = monitora todas as casas que a API devolver, menos a referencia.",
+    "incluir": [],
+    "excluir": []
+  },
+
+  "deteccao": {
+    "_comentario_1": "desvio: odd da casa acima do preco justo da referencia, em percentual (0.04 = 4%).",
+    "desvio_minimo": 0.04,
+    "_comentario_2": "segundos que o desvio precisa se manter antes de virar alerta.",
+    "duracao_minima_segundos": 20,
+    "_comentario_3": "staleness: se a referencia mexeu mais que isso e a casa ficou parada...",
+    "movimento_referencia_minimo": 0.03,
+    "_comentario_4": "...por mais que estes segundos, e alerta de atraso.",
+    "atraso_maximo_segundos": 60,
+    "odd_minima": 1.2,
+    "odd_maxima": 15.0
+  },
+
+  "alertas": {
+    "console": true,
+    "telegram": true,
+    "repetir_mesmo_alerta_apos_segundos": 300
+  },
+
+  "armazenamento": {
+    "arquivo_banco": "dados/historico.db"
+  }
+}
