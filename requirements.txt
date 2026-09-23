@@ -1,0 +1,3 @@
+# O bot roda so com a biblioteca padrao do Python (3.10+).
+# A unica dependencia externa e o pytest, usado apenas para rodar os testes.
+pytest>=7.4
