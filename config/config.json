@@ -42,9 +42,22 @@
       "_comentario": "Opcao A. Traz a referencia de mercado (Pinnacle/exchanges).",
       "ativo": true
     },
+    "odds_api_io": {
+      "_comentario_1": "Unico provedor achado que cobre alguma Novibet (ver docs/decisoes.md D-014).",
+      "_comentario_2": "Serve para testar se o atraso e da plataforma Novibet, e nao so da operacao brasileira.",
+      "ativo": false,
+      "_comentario_3": "Precisa de ODDS_API_IO_KEY no .env (plano gratuito: 100/hora, 500/dia).",
+      "esporte": "tennis",
+      "casas": ["Novibet GR", "Novibet", "ON Sharp", "Betfair Exchange"],
+      "mercados": ["ML"],
+      "_comentario_4": "false pega o circuito inteiro: mais jogos, medida mais confiavel.",
+      "filtrar_torneios": true,
+      "limite_requisicoes_por_ciclo": 4
+    },
     "navegador": {
       "_comentario_1": "Opcao B. Abre o site da casa e le o que a propria pagina recebe.",
-      "ativo": true,
+      "_comentario_0": "As duas casas .bet.br bloqueiam navegador automatizado (D-011). Desligado.",
+      "ativo": false,
       "casas": ["novibet"],
       "_comentario_2": "bet365 esta bloqueando navegador automatizado; ver docs/decisoes.md#d-011.",
       "_comentario_3": "Pasta de perfil do navegador. Na primeira vez rode com sem_janela=false, aceite o portao de idade na mao, e depois o bot reaproveita.",
@@ -66,7 +79,7 @@
 
   "referencia": {
     "_comentario": "Casas usadas como 'preco justo'. A primeira que aparecer no evento e usada.",
-    "casas_preferidas": ["pinnacle", "betfair_ex_eu", "betfair_ex_uk", "smarkets", "matchbook"],
+    "casas_preferidas": ["pinnacle", "on_sharp", "betfair_exchange", "betfair_ex_eu", "betfair_ex_uk", "smarkets", "matchbook"],
     "remover_margem": true
   },
 

@@ -218,3 +218,54 @@ dinheiro real. Em resumo: as casas proíbem acesso automatizado, podem limitar a
 conta e podem anular apostas feitas em odd "palpavelmente errada".
 
 Este projeto **não contorna** CAPTCHA, Cloudflare ou qualquer proteção anti-bot.
+
+---
+
+## Testar a hipótese da Novibet GR
+
+A Novibet Brasil não é coberta por nenhum agregador. Mas a **Novibet GR**
+(Grécia) está disponível na [odds-api.io](https://odds-api.io), e a Novibet roda
+a mesma plataforma nos vários mercados.
+
+Se o atraso for característica do motor de precificação da casa, a versão grega
+mostra o mesmo comportamento — e esse dado está à venda, sem bloqueio nenhum.
+
+**Passo 1 — pegar a chave** (só você pode fazer isso; eu não crio contas):
+
+1. Entre em https://odds-api.io e crie a conta gratuita (100 req/hora, 500/dia,
+   sem cartão).
+2. Copie a chave para o `.env`:
+
+```
+ODDS_API_IO_KEY=sua_chave_aqui
+```
+
+**Passo 2 — ligar a fonte** no `config/config.json`:
+
+```json
+"odds_api_io": { "ativo": true }
+```
+
+Para uma medida mais confiável, vale também `"filtrar_torneios": false` — pega
+o circuito inteiro em vez de só os 4 torneios, o que dá muito mais amostras.
+
+**Passo 3 — deixar rodar durante os jogos:**
+
+```bash
+python -m src.main
+```
+
+**Passo 4 — ler o resultado:**
+
+```bash
+python -m src.main --medir-atraso
+```
+
+Sai uma tabela com a mediana, a média e o máximo de atraso de cada casa, e em
+quantos % das vezes ela ficou parada mais de 60 segundos. A casa no topo é a
+mais atrasada.
+
+> **O limite honesto:** Novibet GR e Novibet BR são mercados diferentes. Se a
+> grega atrasar, é indício forte de que o comportamento é da plataforma — não
+> prova sobre a brasileira. Se a grega **não** atrasar, a hipótese morre e a
+> conclusão é limpa.

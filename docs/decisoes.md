@@ -237,6 +237,41 @@ monitorada.
 
 ---
 
+## D-016 — Testar a hipótese "o atraso é da plataforma Novibet"
+**Data:** 2026-09-24
+
+**A ideia:** a Novibet Brasil não é coberta por ninguém, mas a **Novibet GR**
+(Grécia) está disponível na odds-api.io, ativa desde 20/08/2026. A Novibet roda
+a mesma plataforma nos vários mercados. Se o atraso que o apostador observou é
+característica do **motor de precificação** da casa, a versão grega deve exibir
+o mesmo comportamento — e esse dado está à venda, sem bloqueio nenhum.
+
+**Confirmado sem precisar de conta** (os endpoints `/sports` e `/bookmakers` da
+odds-api.io são abertos):
+- `Novibet` e `Novibet GR`, ambas `active: true`;
+- tênis suportado (`slug: tennis`);
+- referência disponível: `Betfair Exchange` e `ON Sharp` (linha sharp de
+  consenso). Não há Pinnacle.
+
+**O ganho técnico inesperado:** essa API devolve **`updatedAt` por casa e por
+mercado**. Ou seja, a casa informa quando reprecificou. Nas outras fontes o bot
+precisava inferir isso comparando ciclos; aqui o carimbo é da própria fonte.
+Isso torna a medida de atraso muito mais precisa e permitiu criar o relatório
+`--medir-atraso`.
+
+**O limite honesto da hipótese:** Novibet GR e Novibet BR são mercados
+diferentes, com liquidez e possivelmente equipe de trading diferentes. Se a
+grega atrasar, isso é **indício forte** de que o comportamento é da plataforma,
+não prova de que a brasileira atrasa igual. Se a grega **não** atrasar, aí sim
+a conclusão é limpa: a hipótese morre e a operação brasileira teria que ser
+observada de outro jeito.
+
+**Implementado:** `src/adapters/odds_api_io.py`, desligado por padrão no
+config (`fontes.odds_api_io.ativo: false`), e `--medir-atraso` para ler o
+resultado.
+
+---
+
 ## D-009 — Nenhuma dependência externa além do pytest
 **Data:** 2026-09-23
 **Decisão:** o bot roda só com a biblioteca padrão do Python.

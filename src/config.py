@@ -104,6 +104,11 @@ def chave_api_odds() -> str | None:
     return valor or None
 
 
+def chave_odds_api_io() -> str | None:
+    valor = os.environ.get("ODDS_API_IO_KEY", "").strip()
+    return valor or None
+
+
 def credenciais_telegram() -> tuple[str | None, str | None]:
     token = os.environ.get("TELEGRAM_BOT_TOKEN", "").strip() or None
     chat_id = os.environ.get("TELEGRAM_CHAT_ID", "").strip() or None

@@ -22,12 +22,20 @@ from src.adapters.casas.bet365 import ParserBet365
 from src.adapters.casas.novibet import ParserNovibet
 from src.adapters.monitor import MonitorDeSaude
 from src.adapters.navegador import AdapterNavegador, PlaywrightAusente
+from src.adapters.odds_api_io import AdapterOddsApiIo, ErroOddsApiIo
 from src.adapters.the_odds_api import AdapterTheOddsApi, ErroDaApi, SemCreditos
 from src.alertas.telegram import montar_alertadores
 from src.armazenamento.sqlite import HistoricoSqlite
 from src.comparador.estado import ControleDeRepeticao, EstadoDeMercado
 from src.comparador.motor import MotorDeComparacao
-from src.config import CAMINHO_CONFIG_PADRAO, Config, carregar_env, chave_api_odds, credenciais_telegram
+from src.config import (
+    CAMINHO_CONFIG_PADRAO,
+    Config,
+    carregar_env,
+    chave_api_odds,
+    chave_odds_api_io,
+    credenciais_telegram,
+)
 from src.modelos import agora_utc
 
 PARSERS_DISPONIVEIS = {"novibet": ParserNovibet, "bet365": ParserBet365}
@@ -61,6 +69,33 @@ def montar_adapter(config: Config, chave: str) -> AdapterTheOddsApi:
         formato_odds=coleta.get("formato_odds", "decimal"),
         parar_com_creditos_restantes=int(coleta.get("parar_com_creditos_restantes", 20)),
     )
+
+
+def montar_adapter_odds_api_io(config: Config) -> list[AdapterOddsApiIo]:
+    """Monta a fonte da odds-api.io, se ligada e com chave no .env."""
+    secao = config.fontes.get("odds_api_io", {})
+    if not secao.get("ativo"):
+        return []
+
+    chave = chave_odds_api_io()
+    if not chave:
+        log.error(
+            "Fonte odds_api_io ligada no config, mas falta ODDS_API_IO_KEY no .env. "
+            "Pegue a chave gratuita em https://odds-api.io (100 req/hora, sem cartao)."
+        )
+        return []
+
+    return [
+        AdapterOddsApiIo(
+            chave_api=chave,
+            casas=secao.get("casas", []),
+            torneios=config.torneios,
+            esporte=secao.get("esporte", "tennis"),
+            mercados=secao.get("mercados", ["ML"]),
+            filtrar_torneios=bool(secao.get("filtrar_torneios", True)),
+            limite_requisicoes_por_ciclo=int(secao.get("limite_requisicoes_por_ciclo", 6)),
+        )
+    ]
 
 
 def montar_adapters_de_navegador(config: Config) -> list[AdapterNavegador]:
@@ -180,6 +215,39 @@ def mostrar_diagnostico(config: Config, adapter: AdapterTheOddsApi) -> int:
     return 0
 
 
+def mostrar_medicao_de_atraso(config: Config) -> int:
+    """Responde: quais casas reprecificam depois do mercado, e quanto depois?
+
+    Usa o `updatedAt` que a fonte informa. Hoje so a odds-api.io informa isso,
+    entao este relatorio mede as casas que vem por ela - incluindo a Novibet GR.
+    """
+    historico = HistoricoSqlite(config.caminho_banco())
+    linhas = historico.resumo_de_atraso()
+    historico.encerrar()
+
+    if not linhas:
+        print(
+            "Ainda nao ha dados com carimbo de atualizacao da casa.\n"
+            "Ligue a fonte 'odds_api_io' no config.json, ponha ODDS_API_IO_KEY\n"
+            "no .env e deixe o bot rodar durante os jogos."
+        )
+        return 0
+
+    print(f"\n{'CASA':<22}{'AMOSTRAS':>10}{'MEDIANA':>11}{'MEDIA':>10}{'MAXIMO':>10}{'>60s':>8}")
+    print("-" * 71)
+    for r in linhas:
+        print(
+            f"{r['casa']:<22}{r['amostras']:>10}"
+            f"{r['atraso_mediano_s']:>10.0f}s{r['atraso_medio_s']:>9.0f}s"
+            f"{r['atraso_maximo_s']:>9.0f}s{r['pct_parada_mais_de_60s']:>7.0f}%"
+        )
+    print(
+        "\nLeitura: quanto maior a mediana, mais a casa demora a acompanhar o\n"
+        "mercado. A casa no topo e a mais atrasada."
+    )
+    return 0
+
+
 def mostrar_relatorio(config: Config) -> int:
     historico = HistoricoSqlite(config.caminho_banco())
     linhas = historico.resumo_por_casa()
@@ -212,7 +280,7 @@ def coletar_de_todas_as_fontes(adapters, monitor, agora) -> list:
         except CasaBloqueada as erro:
             log.error("Fonte %s bloqueada: %s", adapter.nome, erro)
             coletadas = []
-        except (ErroDaApi, PlaywrightAusente) as erro:
+        except (ErroDaApi, ErroOddsApiIo, PlaywrightAusente) as erro:
             log.error("Fonte %s falhou neste ciclo: %s", adapter.nome, erro)
             coletadas = []
         except Exception as erro:  # noqa: BLE001 - uma fonte nao derruba o bot
@@ -276,6 +344,11 @@ def main(argv: list[str] | None = None) -> int:
         "--relatorio", action="store_true", help="imprime o resumo do historico gravado"
     )
     analisador.add_argument(
+        "--medir-atraso",
+        action="store_true",
+        help="mede, pelos carimbos da fonte, quanto cada casa demora a reprecificar",
+    )
+    analisador.add_argument(
         "--preparar-navegador",
         action="store_true",
         help="abre uma janela para voce passar pelas telas da casa uma vez (Opcao B)",
@@ -289,6 +362,9 @@ def main(argv: list[str] | None = None) -> int:
 
     if argumentos.relatorio:
         return mostrar_relatorio(config)
+
+    if argumentos.medir_atraso:
+        return mostrar_medicao_de_atraso(config)
 
     if argumentos.preparar_navegador:
         return preparar_navegador(config)
@@ -319,7 +395,11 @@ def main(argv: list[str] | None = None) -> int:
             return 0
         return mostrar_diagnostico(config, adapter_api)
 
-    adapters = ([adapter_api] if adapter_api else []) + montar_adapters_de_navegador(config)
+    adapters = (
+        ([adapter_api] if adapter_api else [])
+        + montar_adapter_odds_api_io(config)
+        + montar_adapters_de_navegador(config)
+    )
     if not adapters:
         print("Nenhuma fonte de odds ligada no config.json.", file=sys.stderr)
         return 2

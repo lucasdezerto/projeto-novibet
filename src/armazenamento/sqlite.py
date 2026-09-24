@@ -132,5 +132,67 @@ class HistoricoSqlite:
         )
         return cursor.fetchall()
 
+    def resumo_de_atraso(self, minimo_de_amostras: int = 5) -> list[dict]:
+        """Mede, casa por casa, o quanto ela reprecifica depois do mercado.
+
+        Só funciona com fontes que informam `timestamp_fonte` (o `updatedAt`
+        da odds-api.io). Para cada foto do mercado, a casa que reprecificou
+        mais recentemente define o "agora" daquele mercado; o atraso de cada
+        casa é a distância até ela.
+
+        É este número que responde à pergunta do projeto: a Novibet atrasa, e
+        quanto?
+        """
+        linhas = self.conexao.execute(
+            "SELECT casa, evento_id, mercado, selecao, timestamp_coleta, timestamp_fonte "
+            "FROM odds WHERE timestamp_fonte IS NOT NULL"
+        ).fetchall()
+
+        # Agrupa por foto do mercado: mesmo jogo, mesmo mercado, mesma coleta.
+        fotos: dict[tuple, dict[str, datetime]] = {}
+        for casa, evento, mercado, selecao, coleta, fonte in linhas:
+            try:
+                momento = datetime.fromisoformat(fonte)
+            except (TypeError, ValueError):
+                continue
+            chave = (evento, mercado, selecao, coleta)
+            por_casa = fotos.setdefault(chave, {})
+            # Se a casa aparecer duas vezes, fica a atualização mais recente.
+            if casa not in por_casa or momento > por_casa[casa]:
+                por_casa[casa] = momento
+
+        atrasos: dict[str, list[float]] = {}
+        for por_casa in fotos.values():
+            if len(por_casa) < 2:
+                continue  # sem com quem comparar
+            mais_recente = max(por_casa.values())
+            for casa, momento in por_casa.items():
+                atrasos.setdefault(casa, []).append((mais_recente - momento).total_seconds())
+
+        resumo = []
+        for casa, valores in atrasos.items():
+            if len(valores) < minimo_de_amostras:
+                continue
+            ordenados = sorted(valores)
+            meio = len(ordenados) // 2
+            mediana = (
+                ordenados[meio]
+                if len(ordenados) % 2
+                else (ordenados[meio - 1] + ordenados[meio]) / 2
+            )
+            resumo.append(
+                {
+                    "casa": casa,
+                    "amostras": len(valores),
+                    "atraso_medio_s": sum(valores) / len(valores),
+                    "atraso_mediano_s": mediana,
+                    "atraso_maximo_s": ordenados[-1],
+                    "pct_parada_mais_de_60s": 100.0
+                    * sum(1 for v in valores if v > 60)
+                    / len(valores),
+                }
+            )
+        return sorted(resumo, key=lambda r: r["atraso_mediano_s"], reverse=True)
+
     def encerrar(self) -> None:
         self.conexao.close()
