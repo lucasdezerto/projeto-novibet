@@ -320,6 +320,43 @@ máquina dele continue funcionando sem nenhuma ação da parte dele.
 
 ---
 
+## D-018 — Opção B por extensão do Chrome, com uma pessoa navegando
+**Data:** 2026-09-24
+**Decidido por:** Kevin
+
+**Contexto:** a Novibet é exigência do cliente. Nenhum agregador a cobre
+(D-014), o acesso direto dá 403 (D-015) e ela bloqueia navegador
+automatizado (D-011). O teste com a Novibet GR (D-016) foi descartado.
+
+**Decisão:** a Novibet entra por uma extensão do Chrome (pasta `extensao/`)
+instalada no navegador **normal** de uma pessoa. A pessoa abre as páginas de
+torneio. A extensão copia as respostas de odds que a própria página pediu e
+entrega ao bot em `127.0.0.1`. O resto do bot (parser, motor, alertas) é o
+mesmo.
+
+**Por que isto não é contornar a proteção:** quem passa pela Cloudflare é uma
+pessoa num navegador comum, que é exatamente o que a verificação existe para
+permitir. A extensão não disfarça nada, não altera impressão digital e não
+resolve desafio. Os limites, travados em teste (`tests/test_extensao.py`):
+- a extensão não faz requisição ao site, não recarrega, não clica;
+- só pede permissão para falar com `127.0.0.1:8765` e só roda na Novibet;
+- a resposta que a página recebe fica intacta;
+- tela de verificação na aba vira `CasaBloqueada`, e quem resolve (ou não) é
+  a pessoa;
+- o receptor recusa pedidos vindos de sites, para ninguém injetar odds falsas.
+
+**Risco aceito:** os termos de uso das casas costumam proibir coleta
+automatizada (seção 6 do projeto). Não há login nem aposta automática, mas o
+risco contratual existe e foi aceito conscientemente.
+
+**Limite atual:** o bot ainda compara em ciclos de 120s, porque o motor só
+compara odds que chegam no mesmo ciclo e a referência (The Odds API) é cara
+de consultar. A Novibet chega a cada ~5s e a hora de cada mudança é
+preservada, mas o alerta sai no ritmo do ciclo. O próximo passo é o motor
+lembrar a última referência, para rodar em ciclos curtos.
+
+---
+
 ## D-009 — Nenhuma dependência externa além do pytest
 **Data:** 2026-09-23
 **Decisão:** o bot roda só com a biblioteca padrão do Python.

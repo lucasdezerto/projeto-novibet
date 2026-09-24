@@ -65,6 +65,14 @@
       "sem_janela": true,
       "segundos_por_ciclo": 6,
       "silencio_maximo_segundos": 300
+    },
+    "extensao": {
+      "_comentario_1": "Opcao B pela extensao do Chrome (docs/decisoes.md D-018). Uma pessoa abre as paginas da casa no Chrome dela; a extensao copia o que a pagina ja recebeu e entrega ao bot.",
+      "_comentario_2": "Como instalar a extensao: extensao/LEIAME.md. Para conferir: python -m src.main --testar-extensao",
+      "ativo": false,
+      "casas": ["novibet"],
+      "_comentario_3": "Se mudar a porta, mude tambem em extensao/fundo.js e extensao/manifest.json.",
+      "porta": 8765
     }
   },
 

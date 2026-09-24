@@ -19,10 +19,14 @@ bot para.
 
 from __future__ import annotations
 
+import json
+import logging
 from abc import ABC, abstractmethod
 from datetime import datetime
 
 from src.modelos import OddNormalizada
+
+log = logging.getLogger(__name__)
 
 
 class CasaBloqueada(Exception):
@@ -69,3 +73,25 @@ class ParserDeCasa(ABC):
         """Procura na pagina os sinais de bloqueio declarados pela casa."""
         texto = (texto_da_pagina or "").lower()
         return any(padrao.lower() in texto for padrao in self.padroes_de_bloqueio)
+
+
+def converter_corpo(
+    parser: ParserDeCasa, url: str, corpo: str, torneio_id: str, agora: datetime
+) -> list[OddNormalizada]:
+    """Decodifica um corpo capturado e passa para o parser, sem nunca levantar erro.
+
+    Serve para qualquer forma de captura (navegador automatizado ou extensao):
+    o que muda entre elas e so como o corpo chega ate aqui.
+    """
+    try:
+        dados = json.loads(corpo)
+    except (json.JSONDecodeError, TypeError):
+        return []
+    try:
+        return parser.converter(url, dados, torneio_id, agora)
+    except Exception as erro:  # noqa: BLE001 - formato da casa mudou
+        log.error(
+            "O parser de %s falhou em %s (o formato da casa pode ter mudado): %s",
+            parser.nome, url, erro,
+        )
+        return []

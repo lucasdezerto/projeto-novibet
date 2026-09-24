@@ -1,0 +1,22 @@
+{
+  "manifest_version": 3,
+  "name": "Projeto Novibet - leitor de odds",
+  "version": "0.1.0",
+  "description": "Copia as odds que a pagina da Novibet ja recebeu e entrega ao bot neste computador. Nao faz requisicao ao site.",
+  "host_permissions": ["http://127.0.0.1:8765/*"],
+  "background": { "service_worker": "fundo.js" },
+  "action": { "default_title": "Projeto Novibet" },
+  "content_scripts": [
+    {
+      "matches": ["https://www.novibet.bet.br/*", "https://novibet.bet.br/*"],
+      "js": ["pagina.js"],
+      "run_at": "document_start",
+      "world": "MAIN"
+    },
+    {
+      "matches": ["https://www.novibet.bet.br/*", "https://novibet.bet.br/*"],
+      "js": ["ponte.js"],
+      "run_at": "document_start"
+    }
+  ]
+}

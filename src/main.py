@@ -5,6 +5,7 @@ Uso:
     python -m src.main --uma-vez       # faz uma coleta so e sai
     python -m src.main --diagnostico   # so mostra o que a API cobre, sem coletar odds
     python -m src.main --relatorio     # imprime o resumo do historico ja gravado
+    python -m src.main --testar-extensao  # espera a extensao do Chrome mandar odds
 
 O ciclo e sempre o mesmo: coletar -> normalizar -> comparar -> alertar -> gravar.
 """
@@ -20,6 +21,7 @@ import time
 from src.adapters.casas.base import CasaBloqueada
 from src.adapters.casas.bet365 import ParserBet365
 from src.adapters.casas.novibet import ParserNovibet
+from src.adapters.extensao import AdapterExtensao, ErroDaExtensao
 from src.adapters.monitor import MonitorDeSaude
 from src.adapters.navegador import AdapterNavegador, PlaywrightAusente
 from src.adapters.odds_api_io import AdapterOddsApiIo, ErroOddsApiIo
@@ -124,6 +126,82 @@ def montar_adapters_de_navegador(config: Config) -> list[AdapterNavegador]:
             )
         )
     return adapters
+
+
+def montar_adapters_de_extensao(config: Config) -> list[AdapterExtensao]:
+    """Monta a Opcao B pela extensao do Chrome, uma por casa ligada no config."""
+    secao = config.fontes.get("extensao", {})
+    if not secao.get("ativo"):
+        return []
+
+    adapters = []
+    for apelido in secao.get("casas", []):
+        classe = PARSERS_DISPONIVEIS.get(apelido)
+        if classe is None:
+            log.error("Casa desconhecida no config: %s", apelido)
+            continue
+        adapters.append(
+            AdapterExtensao(
+                parser=classe(),
+                torneios=config.torneios,
+                porta=int(secao.get("porta", 8765)),
+                apelido=apelido,
+            )
+        )
+    return adapters
+
+
+def aguardar_primeiras_odds(adapter, tentativas: int = 24, pausa: float = 5.0, dormir=time.sleep):
+    """Espera a extensao mandar alguma coisa. Devolve as odds da primeira leva."""
+    for tentativa in range(tentativas):
+        odds = adapter.coletar()
+        if odds:
+            return odds
+        if tentativa + 1 < tentativas:
+            dormir(pausa)
+    return []
+
+
+def conferir_extensao(config: Config, tentativas: int = 24, pausa: float = 5.0) -> int:
+    """Confere se a extensao do Chrome esta entregando odds ao bot."""
+    adapters = montar_adapters_de_extensao(config)
+    if not adapters:
+        print(
+            "A fonte 'extensao' esta desligada no config.json.\n"
+            "Ponha \"ativo\": true em fontes.extensao e rode de novo.",
+            file=sys.stderr,
+        )
+        return 2
+
+    adapter = adapters[0]
+    try:
+        adapter.iniciar()
+        print(
+            "\n=== Teste da extensao ===\n"
+            f"Esperando em http://127.0.0.1:{adapter.porta} por ate "
+            f"{tentativas * pausa:.0f}s.\n"
+            "No Chrome, abra (ou recarregue) uma pagina de torneio da Novibet.\n"
+        )
+        odds = aguardar_primeiras_odds(adapter, tentativas, pausa)
+    except (CasaBloqueada, ErroDaExtensao) as erro:
+        print(f"\n{erro}", file=sys.stderr)
+        return 1
+    finally:
+        adapter.encerrar()
+
+    if not odds:
+        print(
+            "Nada chegou. Confira: a extensao esta instalada e ligada? A aba da\n"
+            "Novibet esta aberta mostrando as odds? O icone da extensao mostra 'off'?\n"
+            "Veja extensao/LEIAME.md."
+        )
+        return 1
+
+    jogos = sorted({o.evento_descricao for o in odds})
+    print(f"Funcionou: {len(odds)} odds de {len(jogos)} jogos.")
+    for jogo in jogos[:10]:
+        print(f"  - {jogo}")
+    return 0
 
 
 def preparar_navegador(config: Config) -> int:
@@ -280,7 +358,7 @@ def coletar_de_todas_as_fontes(adapters, monitor, agora) -> list:
         except CasaBloqueada as erro:
             log.error("Fonte %s bloqueada: %s", adapter.nome, erro)
             coletadas = []
-        except (ErroDaApi, ErroOddsApiIo, PlaywrightAusente) as erro:
+        except (ErroDaApi, ErroOddsApiIo, PlaywrightAusente, ErroDaExtensao) as erro:
             log.error("Fonte %s falhou neste ciclo: %s", adapter.nome, erro)
             coletadas = []
         except Exception as erro:  # noqa: BLE001 - uma fonte nao derruba o bot
@@ -353,6 +431,11 @@ def main(argv: list[str] | None = None) -> int:
         action="store_true",
         help="abre uma janela para voce passar pelas telas da casa uma vez (Opcao B)",
     )
+    analisador.add_argument(
+        "--testar-extensao",
+        action="store_true",
+        help="espera a extensao do Chrome mandar odds da Novibet (Opcao B)",
+    )
     analisador.add_argument("--verboso", action="store_true")
     argumentos = analisador.parse_args(argv)
 
@@ -368,6 +451,9 @@ def main(argv: list[str] | None = None) -> int:
 
     if argumentos.preparar_navegador:
         return preparar_navegador(config)
+
+    if argumentos.testar_extensao:
+        return conferir_extensao(config)
 
     usa_api = bool(config.fontes.get("api_agregadora", {}).get("ativo", True))
     adapter_api = None
@@ -399,6 +485,7 @@ def main(argv: list[str] | None = None) -> int:
         ([adapter_api] if adapter_api else [])
         + montar_adapter_odds_api_io(config)
         + montar_adapters_de_navegador(config)
+        + montar_adapters_de_extensao(config)
     )
     if not adapters:
         print("Nenhuma fonte de odds ligada no config.json.", file=sys.stderr)

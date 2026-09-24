@@ -18,13 +18,12 @@ O Playwright e importado so quando o adapter e usado, para que o resto do bot
 
 from __future__ import annotations
 
-import json
 import logging
 import threading
 from datetime import datetime
 
 from src.adapters.base import AdapterDeOdds
-from src.adapters.casas.base import CasaBloqueada, ParserDeCasa
+from src.adapters.casas.base import CasaBloqueada, ParserDeCasa, converter_corpo
 from src.modelos import OddNormalizada, agora_utc
 
 log = logging.getLogger(__name__)
@@ -214,17 +213,7 @@ class AdapterNavegador(AdapterDeOdds):
         """
         odds: list[OddNormalizada] = []
         for torneio_id, url, corpo in capturados:
-            try:
-                dados = json.loads(corpo)
-            except (json.JSONDecodeError, TypeError):
-                continue
-            try:
-                odds.extend(self.parser.converter(url, dados, torneio_id, agora))
-            except Exception as erro:  # noqa: BLE001 - formato da casa mudou
-                log.error(
-                    "O parser de %s falhou em %s (o formato da casa pode ter mudado): %s",
-                    self.parser.nome, url, erro,
-                )
+            odds.extend(converter_corpo(self.parser, url, corpo, torneio_id, agora))
         return odds
 
     def _texto_da_pagina(self, pagina) -> str:

@@ -18,7 +18,8 @@ o resto do mercado já corrigiu.
 | Fonte | O que é | Estado |
 |---|---|---|
 | **Opção A** — API agregadora ([The Odds API](https://the-odds-api.com)) | Odds de várias casas europeias/britânicas num formato só. Dá a **referência de mercado** (Pinnacle, exchanges). | Funcionando |
-| **Opção B** — interceptador de navegador | Abre o site da casa e lê o JSON que a própria página recebe. | Código pronto e testado; **acesso bloqueado pelas duas casas** |
+| **Opção B** — extensão do Chrome | Uma pessoa abre o site da Novibet no Chrome; a extensão copia o JSON que a página já recebeu. | Pronta e testada; falta instalar no Chrome e testar com o site de verdade |
+| **Opção B (antiga)** — navegador automatizado | O bot abre o site sozinho num Chromium. | **Bloqueado pelas duas casas** |
 
 > **Leia antes de usar:**
 > - A API agregadora **não cobre** nenhuma casa brasileira `.bet.br`
@@ -89,7 +90,26 @@ python -m pytest -q
 
 ---
 
-## Opção B — interceptador de navegador
+## Opção B — extensão do Chrome (caminho atual da Novibet)
+
+Você abre as páginas de torneio da Novibet no **seu** Chrome, do jeito normal.
+Uma extensão copia as odds que a página já recebeu e entrega ao bot, neste
+mesmo computador. A extensão não faz requisição ao site e não resolve
+verificação nenhuma ([decisões D-018](docs/decisoes.md#d-018)).
+
+Instalação e uso: [extensao/LEIAME.md](extensao/LEIAME.md). Resumo:
+
+1. Carregue a pasta `extensao` em `chrome://extensions` (Modo do desenvolvedor).
+2. Ponha `"ativo": true` em `fontes.extensao` no `config/config.json`.
+3. Confira se as odds estão chegando:
+
+```bash
+python -m src.main --testar-extensao
+```
+
+---
+
+## Opção B (antiga) — interceptador com navegador automatizado
 
 Abre a página da casa num Chromium de verdade e lê o JSON que a **própria
 página** recebe. Não inventa requisição, não faz login e não aposta.

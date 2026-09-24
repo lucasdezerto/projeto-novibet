@@ -72,3 +72,13 @@ Nos comandos abaixo, `python` quer dizer esse executável.
 - Parser novo vai em `src/adapters/casas/`, implementando `ParserDeCasa`.
 - Todo parser precisa de teste com payload real gravado em `tests/fixtures/`.
 - Playwright é opcional: o bot e os testes têm que funcionar sem ele instalado.
+
+## Opção B pela extensão do Chrome (D-018)
+
+- É o caminho atual da Novibet: uma pessoa navega no Chrome normal, e a
+  extensão (`extensao/`) copia o que a página já recebeu para o bot em
+  `127.0.0.1`. Código do lado do bot: `src/adapters/extensao.py`.
+- A extensão **nunca** faz requisição ao site, recarrega página, clica,
+  resolve verificação ou se disfarça. Também não ganha permissão nova no
+  `manifest.json`. Os testes em `tests/test_extensao.py` travam isso.
+- Conferir se está chegando: `python -m src.main --testar-extensao`.

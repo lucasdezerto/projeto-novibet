@@ -1,5 +1,52 @@
 # Diário de sessões
 
+## 2026-09-24 (Kevin) — Opção B pela extensão do Chrome
+
+**Contexto:** a Novibet é exigência do cliente e o teste da Novibet GR foi
+descartado. Caminho escolhido: extensão no Chrome normal de uma pessoa
+([D-018](decisoes.md#d-018)).
+
+### O que foi construído
+- **`extensao/`** — extensão do Chrome. Copia as respostas de odds que a
+  página da Novibet já recebeu (por `fetch` e `XMLHttpRequest`) e entrega ao
+  bot em `127.0.0.1:8765`. A cada 20s também manda o título da aba, para o
+  bot reconhecer tela de verificação. O ícone mostra `off` quando o bot não
+  está rodando.
+- **`src/adapters/extensao.py`** — o receptor no bot. Usa o mesmo parser da
+  Novibet que já existia. Guarda a hora exata de cada mudança de odd entre um
+  ciclo e outro, porque é ela que mede o atraso.
+- **`--testar-extensao`** — espera a extensão mandar odds e mostra o que
+  chegou.
+- Config em `fontes.extensao`, **desligada por padrão** (não muda nada na
+  outra máquina).
+- **153 testes** (eram 123). Um deles roda o script da extensão de verdade no
+  Node, num navegador de mentira, e confere que ele não faz requisição nem
+  muda a resposta da página. É pulado se o Node não estiver instalado.
+
+### Bugs encontrados pelos testes
+- No Windows, o servidor padrão do Python deixa **dois programas escutarem na
+  mesma porta**. Com duas cópias do bot abertas, a extensão entregaria as
+  odds para uma delas ao acaso, sem aviso. Agora a porta é exclusiva e a
+  segunda cópia recebe erro claro.
+- O pytest confundia a função `testar_extensao` com um teste, por causa do
+  nome. Virou `conferir_extensao`.
+
+### Ainda não testado
+**A extensão ainda não rodou no site de verdade.** Foi testada com o payload
+real gravado e um teste ponta a ponta do comando, mas falta instalar no Chrome
+e abrir a Novibet.
+
+### Próximos passos
+1. Instalar a extensão no Chrome e rodar `--testar-extensao` com a Novibet
+   aberta.
+2. **Motor com memória da referência:** hoje ele só compara odds do mesmo
+   ciclo, então o bot roda no ritmo da The Odds API (120s). Para alertar em
+   segundos, o motor precisa lembrar a última referência e rodar em ciclos
+   curtos.
+3. **Referência em tempo real:** com 500 créditos/mês, a The Odds API não
+   acompanha jogo ao vivo. Decidir a fonte (plano pago da odds-api.io ou
+   OddsPapi, que têm Pinnacle/Betfair).
+
 ## 2026-09-24 (Kevin) — Segunda máquina, padrão de trabalho a dois, novo rumo
 
 ### Segunda máquina
