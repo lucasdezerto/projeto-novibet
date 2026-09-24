@@ -55,6 +55,25 @@ class Config:
         return self.secao("coleta")
 
     @property
+    def fontes(self) -> dict:
+        """Quais fontes de odds estao ligadas (Opcao A, Opcao B, ou as duas).
+
+        Config antigo, sem a secao 'fontes', continua valendo: nesse caso so a
+        API agregadora roda, que era o comportamento da Fase 1.
+        """
+        secao = self.secao("fontes")
+        if not secao:
+            return {"api_agregadora": {"ativo": True}, "navegador": {"ativo": False}}
+        return secao
+
+    def caminho_perfil_navegador(self) -> Path | None:
+        relativo = self.fontes.get("navegador", {}).get("pasta_perfil")
+        if not relativo:
+            return None
+        caminho = Path(relativo)
+        return caminho if caminho.is_absolute() else RAIZ / caminho
+
+    @property
     def referencia(self) -> dict:
         return self.secao("referencia")
 

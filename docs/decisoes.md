@@ -114,6 +114,82 @@ para instalar e manter. Entra na Fase 3, junto com o segundo adapter.
 
 ---
 
+## D-010 — A Novibet é polling HTTP, não WebSocket
+**Data:** 2026-09-23
+**Constatação (observada no navegador):** a página de torneio da Novibet **não
+abre nenhum WebSocket**. Ela busca um JSON por HTTP a cada ~5 segundos:
+
+```
+GET /spt/feed/marketviews/location/v2/{grupo}/{locationId}/
+    ?lang=pt-BR&timeZ=...&oddsR=1&usrGrp=BR&timestamp={cursor}
+```
+
+**Decisão:** o interceptador escuta as duas coisas — respostas HTTP e quadros
+de WebSocket — para servir a qualquer casa. O parser da Novibet só filtra pelo
+caminho `/spt/feed/marketviews/`.
+
+**Consequência boa:** o piso de latência da Novibet é o ciclo dela de ~5s, não
+milissegundos. A vantagem da Opção B sobre a Opção A aqui é menor do que o
+plano supunha — mas ainda é grande (5s contra dezenas de segundos).
+
+**IDs dos torneios do escopo na Novibet:** Chengdu 5931297, Hangzhou 5929344,
+Seoul 4494906, Singapore 6190873 (estão no `config.json`).
+
+---
+
+## D-011 — As duas casas brasileiras bloqueiam navegador automatizado
+**Data:** 2026-09-23
+
+**bet365.bet.br:** o menu lateral carrega, mas o painel de odds devolve
+**"Não é possível exibir este conteúdo"**.
+
+**novibet.bet.br:** com Chromium automatizado, a Cloudflare interrompe com
+**"Executando verificação de segurança / proteção contra bots maliciosos"**
+(Ray ID). O site funciona normalmente num navegador comum — o bloqueio é
+específico para automação.
+
+**Decisão:** **não contornar.** Nada de plugin de disfarce, falsificação de
+impressão digital ou solução de CAPTCHA. Isso está proibido no CLAUDE.md e na
+seção 6 de [projeto.md](projeto.md), e é o tipo de coisa que leva à limitação
+da conta.
+
+**O que foi feito em vez disso:**
+1. Os parsers declaram os textos de bloqueio de cada casa. O interceptador
+   reconhece a tela e levanta `CasaBloqueada`, que para o bot com mensagem
+   clara em vez de deixá-lo rodando sem coletar nada.
+2. Existe `--preparar-navegador`: abre uma janela **visível** para **você**
+   passar pelas telas uma vez. O bot não resolve nada; ele só reaproveita o
+   perfil depois. Se as telas não passarem, a resposta certa é desligar a
+   Opção B para aquela casa.
+3. O caminho legítimo para ter esses dados é acesso autorizado (API de
+   parceiro), não burlar a detecção.
+
+**Estado:** o parser da Novibet está pronto e testado contra payload real
+capturado do site. Falta só o acesso. O da bet365 é um esqueleto honesto.
+
+---
+
+## D-012 — Uma fonte com problema não derruba as outras
+**Data:** 2026-09-23
+**Decisão:** `coletar_de_todas_as_fontes` isola cada fonte: bloqueio, erro de
+rede, parser quebrado ou exceção inesperada viram log e lista vazia.
+**Motivo:** o bot existe para comparar. Comparar com uma fonte a menos ainda
+vale alguma coisa; cair não vale nada. A única exceção que interrompe tudo é
+o fim dos créditos da API, porque insistir aí custa dinheiro.
+
+---
+
+## D-013 — Monitor de saúde das fontes
+**Data:** 2026-09-23
+**Decisão:** `src/adapters/monitor.py` acompanha há quanto tempo cada fonte não
+traz odds e avisa uma vez por episódio.
+**Motivo:** o modo de falhar mais comum de adapter próprio é silencioso — o
+site muda o formato e o parser passa a devolver vazio. Pior: uma fonte morta
+faz o motor achar que a casa está "parada" e disparar **alerta de atraso que é
+só o bot quebrado**. O monitor separa uma coisa da outra.
+
+---
+
 ## D-009 — Nenhuma dependência externa além do pytest
 **Data:** 2026-09-23
 **Decisão:** o bot roda só com a biblioteca padrão do Python.

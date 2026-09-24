@@ -1,5 +1,62 @@
 # Diário de sessões
 
+## 2026-09-23 — Opção B: interceptador de navegador
+
+**Objetivo:** implementar e testar a Opção B (ler o tráfego que o site da casa
+recebe) como fonte de odds.
+
+### O que foi construído
+
+- **Interceptador genérico** (`src/adapters/navegador.py`) — abre a página num
+  Chromium com Playwright e escuta respostas HTTP **e** quadros de WebSocket.
+  As páginas ficam abertas entre os ciclos.
+- **Contrato de parser por casa** (`src/adapters/casas/base.py`) — adicionar
+  uma casa nova é escrever um parser, sem tocar em mais nada.
+- **Parser da Novibet** (`src/adapters/casas/novibet.py`) — escrito sobre o
+  payload real do site.
+- **Parser da bet365** — esqueleto honesto, documentando o bloqueio.
+- **Monitor de saúde** (`src/adapters/monitor.py`) — avisa quando uma fonte
+  para de trazer dados.
+- **`main.py` agora orquestra várias fontes** no mesmo ciclo, com isolamento de
+  falhas: uma fonte com problema não derruba as outras.
+- **98 testes** (eram 60), nenhum acessa a internet.
+
+### O que foi descoberto observando o site
+
+- **A Novibet não usa WebSocket.** É polling HTTP a cada ~5s em
+  `/spt/feed/marketviews/location/v2/...`. O ganho de latência da Opção B sobre
+  a Opção A é real, mas menor do que o plano supunha ([D-010](decisoes.md#d-010)).
+- Os IDs dos 4 torneios do escopo na Novibet foram capturados e estão no
+  `config.json`.
+
+### O bloqueio — a notícia ruim
+
+**As duas casas bloqueiam navegador automatizado** ([D-011](decisoes.md#d-011)):
+
+- bet365: *"Não é possível exibir este conteúdo"* no lugar das odds.
+- Novibet: Cloudflare com *"Executando verificação de segurança"*.
+
+Não contornei, por regra do projeto. Em vez disso o bot **reconhece** a tela e
+para com mensagem clara. Existe `--preparar-navegador`, que abre uma janela
+visível para você passar pelas telas na mão, se quiser tentar.
+
+### Bugs encontrados testando ao vivo
+
+1. O interceptador **engolia em silêncio** o erro de leitura da página, então
+   um bloqueio real passava como "nenhuma odd hoje". Agora tenta de novo, usa
+   o título da aba e avisa quando não consegue ler.
+2. A detecção de bloqueio **falhou na primeira rodada ao vivo**: a Cloudflare
+   mostrou a tela em inglês e só havia padrão em português. Agora os padrões
+   são bilíngues e o navegador abre com locale pt-BR. Tem teste travando os dois.
+
+### Próximos passos sugeridos
+
+1. Decidir o que fazer sobre o acesso às casas brasileiras: procurar acesso
+   autorizado aos dados, ou aceitar que só a Opção A roda por enquanto.
+2. Enquanto isso, rodar a Opção A e acumular histórico (Fase 2).
+3. Se surgir acesso, o parser da Novibet já está pronto e testado.
+
+
 ## 2026-09-23 — Fase 1: coletor da Opção A (API agregadora)
 
 **Objetivo da sessão:** começar a implementação pela Opção A e ter um bot que
