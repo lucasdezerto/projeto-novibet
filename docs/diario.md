@@ -1,5 +1,101 @@
 # Diário de sessões
 
+## 2026-09-24 — Caçada por acesso legítimo às odds da Novibet
+
+**Contexto:** a sessão anterior terminou com as duas casas `.bet.br` bloqueando
+navegador automatizado. O pedido foi: tentar todas as possibilidades, inclusive
+outros agregadores. O objetivo mudou de escala — não é venda em massa, é **um
+pedido específico de um apostador**.
+
+### O que foi decidido não fazer
+
+Contornar a detecção de bot continua fora, e vender o bot não muda isso —
+distribuir ferramenta de evasão é pior que usá-la. Sem plugin de disfarce,
+falsificação de impressão digital, proxy residencial ou resolução de CAPTCHA.
+
+### Levantamento de agregadores ([D-014](decisoes.md#d-014))
+
+Cinco provedores verificados procurando Novibet `.bet.br`:
+
+| Provedor | Novibet BR | bet365 BR | Outras BR |
+|---|---|---|---|
+| The Odds API | ❌ | ❌ | ❌ nenhuma |
+| OpticOdds | ❌ | ❌ | Betnacional, Galera.bet, Parimatch |
+| odds-api.io | ❌ | ❌ | 6 casas com sufixo BR |
+| OddsPapi | ❌ (360 casas, zero Novibet) | ✅ | 10+ casas BR |
+| Oddsmarket | ❌ | — | não publica lista |
+
+A ausência é significativa: todos separam variantes por país (Betano BR ≠
+Betano PT). O odds-api.io lista "Novibet" e "Novibet GR", mas **não** "Novibet
+BR", enquanto lista seis outras casas com sufixo BR.
+
+**Descoberta útil:** a **bet365 BR está disponível** na OddsPapi — a casa que o
+navegador não alcançava, um agregador entrega.
+
+### Teste de acesso direto ([D-015](decisoes.md#d-015))
+
+Testei se o feed público da Novibet responde a um cliente HTTP comum,
+**identificado honestamente** (User-Agent dizendo o que o bot é, sem disfarce).
+Não é contorno — é verificar se o dado é publicamente acessível.
+
+**HTTP 403** nos dois endpoints, com o desafio da Cloudflare. O bloqueio não é
+só contra navegador automatizado; é contra qualquer cliente que não passe pelo
+desafio. O teste parou aí.
+
+### A hipótese Novibet GR ([D-016](decisoes.md#d-016))
+
+A Novibet roda a mesma plataforma em vários mercados. Se o atraso for do
+**motor de precificação**, a versão grega mostraria o mesmo comportamento — e
+`Novibet GR` está disponível na odds-api.io, sem bloqueio.
+
+Confirmado sem precisar de conta (os endpoints `/sports` e `/bookmakers` são
+abertos): `Novibet` e `Novibet GR` ativas, tênis suportado, referência via
+`Betfair Exchange` ou `ON Sharp`. Não há Pinnacle.
+
+### O que foi construído
+
+- **`src/adapters/odds_api_io.py`** — coletor da odds-api.io, desligado por
+  padrão no config.
+- **`--medir-atraso`** — relatório que responde a pergunta do projeto: mediana,
+  média, máximo de atraso por casa e em quantos % das vezes ela ficou parada
+  mais de 60s.
+- **123 testes** (eram 98), nenhum acessa a internet.
+
+**Ganho técnico inesperado:** essa API devolve **`updatedAt` por casa e por
+mercado** — a casa informa quando reprecificou. As outras fontes obrigavam o
+bot a inferir isso comparando ciclos. Com o carimbo da própria fonte, a medida
+de atraso fica muito mais precisa. Foi o que tornou o `--medir-atraso` possível.
+
+### O erro que eu cometi e corrigi
+
+Recomendei o tier gratuito da odds-api.io como caminho. Estava errado por dois
+motivos:
+
+1. **As novas chaves gratuitas estão pausadas por tempo indeterminado** —
+   descoberto pelo usuário ao tentar criar a conta.
+2. Mesmo aberto, o gratuito dá só **"2 casas recreativas"**, e *"casas sharp e
+   exchanges exigem plano pago"*. A Novibet é recreativa, mas a **referência**
+   (Betfair Exchange, ON Sharp) é justamente o que o gratuito não entrega — sem
+   ela não há comparação, e o teste não existe.
+
+### Onde o projeto parou
+
+O código está pronto e esperando uma chave. O plano **Solo (R$359/mês, 2 casas)**
+cobre o teste com **Novibet GR + Betfair Exchange**. Vale tirar as duas do mesmo
+provedor: garante o mesmo universo de jogos e o mesmo id de evento.
+
+**Antes de pagar, confirmar com o suporte:** (a) se o cliente escolhe quais são
+as 2 casas do Solo; (b) se existe teste ou reembolso — a página não diz.
+
+### Próximos passos
+
+1. Mandar o e-mail ao suporte da odds-api.io com as duas perguntas.
+2. Se confirmarem, assinar o Solo e rodar o bot durante os jogos de ATP/WTA.
+3. Ler o resultado com `--medir-atraso`.
+4. Se a Novibet GR **não** atrasar, a hipótese morre e a resposta honesta ao
+   cliente é que não há caminho legítimo para monitorar a Novibet hoje.
+
+
 ## 2026-09-23 — Opção B: interceptador de navegador
 
 **Objetivo:** implementar e testar a Opção B (ler o tráfego que o site da casa
