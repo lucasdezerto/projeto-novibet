@@ -1,5 +1,33 @@
 # Diário de sessões
 
+## 2026-09-24 (Kevin) — Exame do site da Novibet e das APIs
+
+Relatório completo: [oportunidades.md](oportunidades.md).
+
+- **Teste da extensão: inconclusivo.** Instalar exige o Modo do desenvolvedor
+  do Chrome (fica com o Kevin). O script, injetado com a página já aberta, não
+  capturou nada, porque o site (Angular) guarda a própria referência para
+  fazer as buscas. A extensão real roda antes do site e não deve ter esse
+  problema, mas falta confirmar instalando.
+- **O formato das odds não mudou:** o feed do torneio confere com o parser.
+- **O site não foi bloqueado** no navegador embutido do app. Cookies
+  recusados; verificação de idade confirmada com autorização do Kevin. Sem
+  login.
+- **Descobertas:** feed ao vivo de todos os esportes a cada 5s, com placar e
+  suspensão; feed por jogo com placar ponto a ponto e **carimbo de
+  reprecificação por mercado** (formato de "ticks" do .NET); `sportradarMatchId`
+  nos jogos. O parser atual só entende o feed de torneio.
+- **Scripts `/gpua/`** são o Google Analytics servido pelo domínio da casa,
+  não proteção anti-bot.
+- **APIs:** a da Pinnacle está fechada ao público desde 23/07/2025. OddsPapi e
+  odds-api.io trazem Pinnacle. Há feeds de placar de tênis ponto a ponto de
+  US$ 0 a 1.000/mês.
+- Nenhum código mudou nesta parte.
+
+### Próximos passos
+Ver a seção 5 de [oportunidades.md](oportunidades.md). O primeiro é instalar a
+extensão e rodar `--testar-extensao` com a página de ao vivo aberta.
+
 ## 2026-09-24 (Kevin) — Opção B pela extensão do Chrome
 
 **Contexto:** a Novibet é exigência do cliente e o teste da Novibet GR foi
