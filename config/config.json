@@ -7,30 +7,53 @@
       "nome": "ATP Chengdu (CHN)",
       "circuito": "ATP",
       "chaves_api": ["tennis_atp_chengdu_open", "tennis_atp_chengdu"],
-      "termos_nome": ["chengdu"]
+      "termos_nome": ["chengdu"],
+      "novibet": { "caminho": "/apostas-esportivas/tenis/4372812/atp-250/atp-chengdu/5931297" }
     },
     {
       "id": "atp-hangzhou",
       "nome": "ATP Hangzhou (CHN)",
       "circuito": "ATP",
       "chaves_api": ["tennis_atp_hangzhou_open", "tennis_atp_hangzhou"],
-      "termos_nome": ["hangzhou"]
+      "termos_nome": ["hangzhou"],
+      "novibet": { "caminho": "/apostas-esportivas/tenis/4372812/atp-250/atp-250-hangzhou/5929344" }
     },
     {
       "id": "wta-seoul",
       "nome": "WTA Seoul (KOR)",
       "circuito": "WTA",
       "chaves_api": ["tennis_wta_seoul_open", "tennis_wta_korea_open", "tennis_wta_seoul"],
-      "termos_nome": ["seoul", "korea open"]
+      "termos_nome": ["seoul", "korea open"],
+      "novibet": { "caminho": "/apostas-esportivas/tenis/4372812/wta-250/wta-seoul/4494906" }
     },
     {
       "id": "wta-singapore",
       "nome": "WTA Singapore (SGP)",
       "circuito": "WTA",
       "chaves_api": ["tennis_wta_singapore_open"],
-      "termos_nome": ["singapore"]
+      "termos_nome": ["singapore"],
+      "novibet": { "caminho": "/apostas-esportivas/tenis/4372812/wta-500/wta-250-singapore/6190873" }
     }
   ],
+
+  "fontes": {
+    "_comentario": "Ligue e desligue cada fonte de odds aqui.",
+    "api_agregadora": {
+      "_comentario": "Opcao A. Traz a referencia de mercado (Pinnacle/exchanges).",
+      "ativo": true
+    },
+    "navegador": {
+      "_comentario_1": "Opcao B. Abre o site da casa e le o que a propria pagina recebe.",
+      "ativo": true,
+      "casas": ["novibet"],
+      "_comentario_2": "bet365 esta bloqueando navegador automatizado; ver docs/decisoes.md#d-011.",
+      "_comentario_3": "Pasta de perfil do navegador. Na primeira vez rode com sem_janela=false, aceite o portao de idade na mao, e depois o bot reaproveita.",
+      "pasta_perfil": "dados/perfil-navegador",
+      "sem_janela": true,
+      "segundos_por_ciclo": 6,
+      "silencio_maximo_segundos": 300
+    }
+  },
 
   "coleta": {
     "regioes": ["eu", "uk"],

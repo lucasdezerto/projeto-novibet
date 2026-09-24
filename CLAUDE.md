@@ -44,3 +44,14 @@ C:\Users\Admin\AppData\Local\Programs\Python\Python312\python.exe
 - `src/adapters/` — fontes de dados. Hoje só a API agregadora (Opção A). Adapters
   próprios por casa (Opção B) entram aqui na Fase 3, implementando `AdapterDeOdds`.
 - `src/comparador/motor.py` — as duas regras que decidem o que é atraso.
+
+## Opção B (interceptador de navegador)
+
+- As casas `.bet.br` bloqueiam navegador automatizado (ver `docs/decisoes.md`
+  D-011). **Não contorne.** Nada de plugin de disfarce, falsificação de
+  impressão digital ou solução de CAPTCHA. Se bloquear, pare e avise.
+- O interceptador só lê o que a página já recebe sozinha. Não monte requisição
+  para a API interna da casa.
+- Parser novo vai em `src/adapters/casas/`, implementando `ParserDeCasa`.
+- Todo parser precisa de teste com payload real gravado em `tests/fixtures/`.
+- Playwright é opcional: o bot e os testes têm que funcionar sem ele instalado.

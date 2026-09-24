@@ -1,4 +1,4 @@
-"""Teste de ponta a ponta do ciclo do bot, sem tocar a internet.
+﻿"""Teste de ponta a ponta do ciclo do bot, sem tocar a internet.
 
 Monta o mesmo encadeamento que o main.py monta (coletar -> comparar ->
 alertar -> gravar) e confere que uma casa atrasada de verdade produz alerta,
@@ -84,7 +84,7 @@ def montar(tmp_path):
         casas_referencia=["pinnacle"],
         deteccao={
             "desvio_minimo": 0.04,
-            # Zero de propósito: aqui os ciclos rodam em milissegundos, entao
+            # Zero de propÃ³sito: aqui os ciclos rodam em milissegundos, entao
             # nenhuma espera de verdade passaria. As regras de tempo estao
             # cobertas no test_motor.py, que injeta o relogio. O que este
             # arquivo testa e o encadeamento das pecas.
@@ -103,7 +103,7 @@ def montar(tmp_path):
 
 def test_ciclo_completo_com_odds_alinhadas_nao_alerta_mas_grava(tmp_path):
     busca, adapter, motor, canal, historico, repeticao = montar(tmp_path)
-    enviados = executar_ciclo(adapter, motor, [canal], repeticao, historico)
+    enviados = executar_ciclo([adapter], motor, [canal], repeticao, historico)
 
     assert enviados == 0
     assert canal.recebidos == []
@@ -116,13 +116,13 @@ def test_ciclo_completo_detecta_casa_atrasada_alerta_e_grava(tmp_path):
     busca, adapter, motor, canal, historico, repeticao = montar(tmp_path)
 
     # Ciclo 1: tudo alinhado.
-    executar_ciclo(adapter, motor, [canal], repeticao, historico)
+    executar_ciclo([adapter], motor, [canal], repeticao, historico)
     assert canal.recebidos == []
 
     # A casa lenta trava numa odd muito acima do preco justo.
     busca.odd_lenta = 3.60
-    executar_ciclo(adapter, motor, [canal], repeticao, historico)
-    executar_ciclo(adapter, motor, [canal], repeticao, historico)
+    executar_ciclo([adapter], motor, [canal], repeticao, historico)
+    executar_ciclo([adapter], motor, [canal], repeticao, historico)
 
     assert canal.recebidos, "a casa parada acima do preco justo tinha que alertar"
     alerta = canal.recebidos[0]
@@ -141,10 +141,10 @@ def test_ciclo_completo_detecta_casa_atrasada_alerta_e_grava(tmp_path):
 
 def test_alerta_repetido_nao_e_reenviado_no_ciclo_seguinte(tmp_path):
     busca, adapter, motor, canal, historico, repeticao = montar(tmp_path)
-    executar_ciclo(adapter, motor, [canal], repeticao, historico)
+    executar_ciclo([adapter], motor, [canal], repeticao, historico)
     busca.odd_lenta = 3.60
     for _ in range(4):
-        executar_ciclo(adapter, motor, [canal], repeticao, historico)
+        executar_ciclo([adapter], motor, [canal], repeticao, historico)
 
     chaves = {a.chave_deduplicacao for a in canal.recebidos}
     assert len(canal.recebidos) == len(chaves), "o mesmo alerta saiu mais de uma vez"
@@ -157,5 +157,6 @@ def test_ciclo_sem_odds_nao_quebra(tmp_path):
         (ESPORTES, {}) if "/sports/?" in url else ([], {})
     )
     adapter._mapa_torneios = None
-    assert executar_ciclo(adapter, motor, [canal], repeticao, historico) == 0
+    assert executar_ciclo([adapter], motor, [canal], repeticao, historico) == 0
     historico.encerrar()
+

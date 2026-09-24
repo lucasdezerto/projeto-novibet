@@ -13,12 +13,19 @@ o resto do mercado já corrigiu.
 | WTA | Seoul (KOR) |
 | WTA | Singapore (SGP) |
 
-**Fonte de dados desta fase:** Opção A do plano — a API agregadora
-[The Odds API](https://the-odds-api.com).
+**Fontes de dados:**
 
-> **Leia antes de usar:** a API agregadora **não cobre** nenhuma casa brasileira
-> `.bet.br` (Novibet, bet365.bet.br). Veja [docs/decisoes.md](docs/decisoes.md#d-002)
-> para entender o que isso significa e o que foi decidido.
+| Fonte | O que é | Estado |
+|---|---|---|
+| **Opção A** — API agregadora ([The Odds API](https://the-odds-api.com)) | Odds de várias casas europeias/britânicas num formato só. Dá a **referência de mercado** (Pinnacle, exchanges). | Funcionando |
+| **Opção B** — interceptador de navegador | Abre o site da casa e lê o JSON que a própria página recebe. | Código pronto e testado; **acesso bloqueado pelas duas casas** |
+
+> **Leia antes de usar:**
+> - A API agregadora **não cobre** nenhuma casa brasileira `.bet.br`
+>   ([decisões D-002](docs/decisoes.md#d-002)).
+> - A Novibet e a bet365 **bloqueiam navegador automatizado**
+>   ([decisões D-011](docs/decisoes.md#d-011)). Este projeto **não contorna**
+>   esse bloqueio.
 
 ---
 
@@ -79,6 +86,65 @@ python -m src.main --relatorio
 ```bash
 python -m pytest -q
 ```
+
+---
+
+## Opção B — interceptador de navegador
+
+Abre a página da casa num Chromium de verdade e lê o JSON que a **própria
+página** recebe. Não inventa requisição, não faz login e não aposta.
+
+Precisa do Playwright (não vem no `requirements.txt` porque é pesado):
+
+```bash
+python -m pip install playwright
+```
+
+```bash
+python -m playwright install chromium
+```
+
+Ligue e desligue em `fontes.navegador` no `config/config.json`.
+
+### Estado real: as duas casas bloqueiam
+
+Testado ao vivo em 23/09/2026:
+
+- **bet365.bet.br** — o painel de odds responde *"Não é possível exibir este
+  conteúdo"*.
+- **novibet.bet.br** — a Cloudflare interrompe com *"Executando verificação de
+  segurança / proteção contra bots maliciosos"*.
+
+**Este projeto não contorna esse bloqueio** — sem plugin de disfarce, sem
+falsificar impressão digital, sem resolver CAPTCHA. É regra do projeto
+(`CLAUDE.md`) e é o que evita ter a conta limitada.
+
+O que o bot faz é **reconhecer** a tela de bloqueio e parar com mensagem clara,
+em vez de rodar horas sem coletar nada.
+
+Se quiser tentar com o seu próprio navegador, existe:
+
+```bash
+python -m src.main --preparar-navegador
+```
+
+Ele abre uma janela **visível** para **você** passar pelas telas uma vez. O bot
+não resolve nada; só reaproveita o perfil depois. Se não passar, o certo é
+desligar a Opção B para aquela casa.
+
+> Automatizar acesso costuma contrariar os termos de uso das casas. Leia a
+> seção 6 de [docs/projeto.md](docs/projeto.md) antes.
+
+### Quando o acesso existir, já está tudo pronto
+
+O parser da Novibet foi escrito sobre um **payload real capturado do site** e
+está coberto por testes. O ponto central já é testado: um jogo da Novibet gera
+**o mesmo `evento_id_normalizado`** que a API agregadora gera, então o motor
+compara a casa brasileira contra a referência de mercado sem saber de onde cada
+preço veio.
+
+Para adicionar uma casa nova, escreva um parser em `src/adapters/casas/` —
+o interceptador e o resto do bot não mudam.
 
 ---
 

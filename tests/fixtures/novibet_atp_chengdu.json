@@ -1,0 +1,315 @@
+[
+ {
+  "marketViewId": 7197611,
+  "marketViewGroupId": 5931237,
+  "rootMarketViewGroupId": 4372812,
+  "path": "matches",
+  "betViews": [
+   {
+    "marketCaptions": [
+     {
+      "betTypeSysname": "TENNIS_SINGLES_MATCH_WINNER",
+      "marketCaption": "Vencedor da partida",
+      "betCaptions": ["1", "2"]
+     },
+     {
+      "betTypeSysname": "TENNIS_SINGLES_MATCH_GAMES_UNDER_OVER",
+      "marketCaption": "Total de Games",
+      "betCaptions": ["1", "2"]
+     }
+    ],
+    "items": [
+     {
+      "eventBetContextId": 48244060,
+      "additionalCaptions": {
+       "type": 1,
+       "competitor1": "James Duckworth",
+       "competitor1ImageId": 84898,
+       "competitor2": "Lorenzo Sonego",
+       "competitor2ImageId": 114041,
+       "discriminator": "TwoCompetitorCaptionModel"
+      },
+      "startTime": "qui. 02:00",
+      "startDate": "2026-09-24T05:00:00+00:00",
+      "isLive": false,
+      "path": "matches/james-duckworth-lorenzo-sonego",
+      "numMarkets": 63,
+      "markets": [
+       {
+        "marketId": 1736121444,
+        "betTypeSysname": "TENNIS_SINGLES_MATCH_WINNER",
+        "useInstanceCaption": false,
+        "betItems": [
+         {
+          "id": "7237958739",
+          "code": "1",
+          "codeCaption": null,
+          "caption": "1",
+          "instanceCaption": null,
+          "betDisplayCaption": null,
+          "price": 2.1,
+          "oddsText": "2.10",
+          "isAvailable": true,
+          "marketStatistic": null
+         },
+         {
+          "id": "7237958740",
+          "code": "2",
+          "codeCaption": null,
+          "caption": "2",
+          "instanceCaption": null,
+          "betDisplayCaption": null,
+          "price": 1.74,
+          "oddsText": "1.74",
+          "isAvailable": true,
+          "marketStatistic": null
+         }
+        ]
+       },
+       {
+        "marketId": 1736121441,
+        "betTypeSysname": "TENNIS_SINGLES_MATCH_GAMES_UNDER_OVER",
+        "useInstanceCaption": false,
+        "betItems": [
+         {
+          "id": "7237958721",
+          "code": "O",
+          "codeCaption": "+",
+          "caption": "Mais de 22,5",
+          "instanceCaption": "22,5",
+          "betDisplayCaption": null,
+          "price": 1.74,
+          "oddsText": "1.74",
+          "isAvailable": true,
+          "marketStatistic": null
+         },
+         {
+          "id": "7237958722",
+          "code": "U",
+          "codeCaption": "-",
+          "caption": "Menos de 22,5",
+          "instanceCaption": "22,5",
+          "betDisplayCaption": null,
+          "price": 1.98,
+          "oddsText": "1.98",
+          "isAvailable": true,
+          "marketStatistic": null
+         }
+        ]
+       }
+      ],
+      "metadata": {
+       "courtSurface": 2,
+       "courtSurfaceText": "Dura",
+       "tournamentRound": "Rodada de 32",
+       "discriminator": "Tennis"
+      }
+     },
+     {
+      "eventBetContextId": 48244061,
+      "additionalCaptions": {
+       "type": 1,
+       "competitor1": "Nuno Borges",
+       "competitor1ImageId": 79160,
+       "competitor2": "Camilo Ugo Carabelli",
+       "competitor2ImageId": 83787,
+       "discriminator": "TwoCompetitorCaptionModel"
+      },
+      "startTime": "qui. 02:00",
+      "startDate": "2026-09-24T05:00:00+00:00",
+      "isLive": false,
+      "path": "matches/nuno-borges-camilo-ugo-carabelli",
+      "numMarkets": 65,
+      "markets": [
+       {
+        "marketId": 1736092595,
+        "betTypeSysname": "TENNIS_SINGLES_MATCH_WINNER",
+        "useInstanceCaption": false,
+        "betItems": [
+         {
+          "id": "7237819728",
+          "code": "1",
+          "codeCaption": null,
+          "caption": "1",
+          "instanceCaption": null,
+          "betDisplayCaption": null,
+          "price": 1.23,
+          "oddsText": "1.23",
+          "isAvailable": true,
+          "marketStatistic": null
+         },
+         {
+          "id": "7237819729",
+          "code": "2",
+          "codeCaption": null,
+          "caption": "2",
+          "instanceCaption": null,
+          "betDisplayCaption": null,
+          "price": 4.2,
+          "oddsText": "4.20",
+          "isAvailable": true,
+          "marketStatistic": null
+         }
+        ]
+       },
+       {
+        "marketId": 1736094402,
+        "betTypeSysname": "TENNIS_SINGLES_MATCH_GAMES_UNDER_OVER",
+        "useInstanceCaption": false,
+        "betItems": [
+         {
+          "id": "7237828759",
+          "code": "O",
+          "codeCaption": "+",
+          "caption": "Mais de 21,5",
+          "instanceCaption": "21,5",
+          "betDisplayCaption": null,
+          "price": 1.87,
+          "oddsText": "1.87",
+          "isAvailable": true,
+          "marketStatistic": null
+         },
+         {
+          "id": "7237828760",
+          "code": "U",
+          "codeCaption": "-",
+          "caption": "Menos de 21,5",
+          "instanceCaption": "21,5",
+          "betDisplayCaption": null,
+          "price": 1.83,
+          "oddsText": "1.83",
+          "isAvailable": true,
+          "marketStatistic": null
+         }
+        ]
+       }
+      ],
+      "metadata": {
+       "courtSurface": 2,
+       "courtSurfaceText": "Dura",
+       "tournamentRound": "Rodada de 32",
+       "discriminator": "Tennis"
+      }
+     },
+     {
+      "eventBetContextId": 48244065,
+      "additionalCaptions": {
+       "type": 1,
+       "competitor1": "Tallon Griekspoor",
+       "competitor1ImageId": 82851,
+       "competitor2": "Denis Shapovalov",
+       "competitor2ImageId": 83773,
+       "discriminator": "TwoCompetitorCaptionModel"
+      },
+      "startTime": "qui. 02:00",
+      "startDate": "2026-09-24T05:00:00+00:00",
+      "isLive": false,
+      "path": "matches/tallon-griekspoor-denis-shapovalov",
+      "numMarkets": 64,
+      "markets": [
+       {
+        "marketId": 1736183736,
+        "betTypeSysname": "TENNIS_SINGLES_MATCH_WINNER",
+        "useInstanceCaption": false,
+        "betItems": [
+         {
+          "id": "7238238212",
+          "code": "1",
+          "codeCaption": null,
+          "caption": "1",
+          "instanceCaption": null,
+          "betDisplayCaption": null,
+          "price": 2.37,
+          "oddsText": "2.37",
+          "isAvailable": true,
+          "marketStatistic": null
+         },
+         {
+          "id": "7238238213",
+          "code": "2",
+          "codeCaption": null,
+          "caption": "2",
+          "instanceCaption": null,
+          "betDisplayCaption": null,
+          "price": 1.73,
+          "oddsText": "1.73",
+          "isAvailable": true,
+          "marketStatistic": null
+         }
+        ]
+       },
+       {
+        "marketId": 1736092533,
+        "betTypeSysname": "TENNIS_SINGLES_MATCH_WINNER",
+        "useInstanceCaption": false,
+        "betItems": [
+         {
+          "id": "7237819561",
+          "code": "1",
+          "codeCaption": null,
+          "caption": "1",
+          "instanceCaption": null,
+          "betDisplayCaption": null,
+          "price": 2.2,
+          "oddsText": "2.20",
+          "isAvailable": true,
+          "marketStatistic": null
+         },
+         {
+          "id": "7237819562",
+          "code": "2",
+          "codeCaption": null,
+          "caption": "2",
+          "instanceCaption": null,
+          "betDisplayCaption": null,
+          "price": 1.68,
+          "oddsText": "1.68",
+          "isAvailable": true,
+          "marketStatistic": null
+         }
+        ]
+       },
+       {
+        "marketId": 1736094006,
+        "betTypeSysname": "TENNIS_SINGLES_MATCH_GAMES_UNDER_OVER",
+        "useInstanceCaption": false,
+        "betItems": [
+         {
+          "id": "7237827080",
+          "code": "O",
+          "codeCaption": "+",
+          "caption": "Mais de 22,5",
+          "instanceCaption": "22,5",
+          "betDisplayCaption": null,
+          "price": 1.8,
+          "oddsText": "1.80",
+          "isAvailable": true,
+          "marketStatistic": null
+         },
+         {
+          "id": "7237827081",
+          "code": "U",
+          "codeCaption": "-",
+          "caption": "Menos de 22,5",
+          "instanceCaption": "22,5",
+          "betDisplayCaption": null,
+          "price": 1.91,
+          "oddsText": "1.91",
+          "isAvailable": true,
+          "marketStatistic": null
+         }
+        ]
+       }
+      ],
+      "metadata": {
+       "courtSurface": 2,
+       "courtSurfaceText": "Dura",
+       "tournamentRound": "Rodada de 32",
+       "discriminator": "Tennis"
+      }
+     }
+    ]
+   }
+  ]
+ }
+]
