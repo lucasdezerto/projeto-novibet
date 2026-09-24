@@ -190,6 +190,53 @@ só o bot quebrado**. O monitor separa uma coisa da outra.
 
 ---
 
+## D-014 — Levantamento de agregadores: ninguém cobre a Novibet Brasil
+**Data:** 2026-09-24
+
+Cinco provedores verificados, procurando especificamente por Novibet `.bet.br`:
+
+| Provedor | Novibet BR | bet365 BR | Outras casas BR |
+|---|---|---|---|
+| The Odds API | ❌ | ❌ | ❌ nenhuma (não existe região `br`) |
+| OpticOdds | ❌ | ❌ | ✅ Betnacional, Galera.bet, Parimatch Brazil |
+| odds-api.io | ❌ | ❌ | ✅ Betano BR, BetMGM BR, Rivalo BR, Sportingbet BR, Stake.bet.br, Vbet BR |
+| OddsPapi | ❌ | ✅ **sim** | ✅ Betano BR, betboo BR, BetMGM BR, Blaze BR, Brazino777 BR, EstrelaBet BR, KTO BR, Sportingbet BR, Stake BR, Superbet BR |
+| Oddsmarket | ❌ | — | não publica a lista |
+
+**A ausência é significativa, não é erro de nome.** Todos esses provedores
+separam variantes por país (Betano BR ≠ Betano PT). O odds-api.io lista
+"Novibet" e "Novibet GR" — mas **não** "Novibet BR", enquanto lista seis outras
+casas com sufixo BR. Ou seja: eles sabem distinguir, e simplesmente não cobrem
+a Novibet brasileira.
+
+**Descoberta útil:** a **bet365 BR está disponível** na OddsPapi. A casa que o
+navegador não alcança, um agregador entrega.
+
+---
+
+## D-015 — Acesso direto ao feed da Novibet também está bloqueado
+**Data:** 2026-09-24
+
+Testei se o endpoint público da Novibet responde a um cliente HTTP comum,
+**identificado honestamente** (User-Agent dizendo o que o bot é, sem disfarce).
+Não é contorno: é verificar se o dado é publicamente acessível.
+
+**Resultado: HTTP 403** nos dois endpoints, com a página `Just a moment...` da
+Cloudflare. O bloqueio não é só contra navegador automatizado — é contra
+qualquer cliente que não passe pelo desafio.
+
+**Decisão:** o teste para aqui. Não haverá tentativa de disfarce de
+User-Agent, impressão digital, proxy residencial ou resolução de CAPTCHA —
+nem para uso próprio, nem para um produto a ser vendido. Distribuir uma
+ferramenta de evasão é pior que usá-la.
+
+**Conclusão combinada com [D-014](#d-014):** hoje **não existe caminho
+programático legítimo** para as odds da Novibet Brasil. As saídas são pedir a
+cobertura aos agregadores, buscar acordo de dados com a casa, ou trocar a casa
+monitorada.
+
+---
+
 ## D-009 — Nenhuma dependência externa além do pytest
 **Data:** 2026-09-23
 **Decisão:** o bot roda só com a biblioteca padrão do Python.
