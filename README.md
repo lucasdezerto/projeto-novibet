@@ -202,6 +202,7 @@ tests/                   Testes, todos sem acesso à internet
 docs/projeto.md          O plano completo do projeto
 docs/decisoes.md         Decisões tomadas e o porquê
 docs/diario.md           O que foi feito em cada sessão
+docs/retrospectiva.md    Balanço: o que deu certo e o que deu errado
 ```
 
 Quando chegar a Fase 3 (adapters próprios por casa, via WebSocket), basta criar
