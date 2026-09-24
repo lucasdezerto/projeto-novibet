@@ -1,5 +1,35 @@
 # Diário de sessões
 
+## 2026-09-24 (Kevin) — Segunda máquina, padrão de trabalho a dois, novo rumo
+
+### Segunda máquina
+- O caminho do Python no CLAUDE.md era o da outra máquina. Nesta, o projeto
+  roda num ambiente próprio (`.venv`, criado com o Python 3.12.5 local).
+- **123 testes passando** aqui também.
+
+### Padrão para duas pessoas ([D-017](decisoes.md#d-017))
+- CLAUDE.md sem caminho de uma máquina só; ajustes locais no `CLAUDE.local.md`
+  (fora do Git). A máquina original continua funcionando sem mudar nada.
+- `git pull` antes de começar; testes + `git pull --rebase` + testes antes de
+  enviar.
+- Diário e decisões com junção automática, para não virar conflito.
+
+### Mudança de rumo
+O teste da Novibet GR (D-016) foi descartado. Objetivo continua: bot em tempo
+real. Levantamento de caminhos:
+- **Betfair não dá mais API para clientes no Brasil** desde 01/01/2025. A
+  referência sharp tem que vir de um agregador.
+- Agregadores com **streaming** (WebSocket/push) cobrindo casas `.bet.br`:
+  OddsPapi (bet365 BR, Betano BR, KTO, Superbet...), OpticOdds (Betnacional,
+  Galera.bet, Parimatch BR) e odds-api.io (Betano BR, Sportingbet BR...;
+  WebSocket dobra o preço do plano).
+- Nenhum deles cobre a Novibet BR (D-014).
+
+### Próximos passos
+1. Decidir se a Novibet é obrigatória ou se dá para trocar de casa.
+2. Se der para trocar: medir o atraso do próprio agregador por casa antes de
+   construir o adapter de streaming.
+
 ## 2026-09-24 — Caçada por acesso legítimo às odds da Novibet
 
 **Contexto:** a sessão anterior terminou com as duas casas `.bet.br` bloqueando
