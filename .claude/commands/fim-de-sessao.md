@@ -11,4 +11,7 @@ description: Roda os testes, atualiza o diario e fecha a sessao
 3. Se alguma decisao de arquitetura foi tomada, registre em `docs/decisoes.md`
    com data e motivo.
 4. Faca o commit e o merge para a `main`, conforme o CLAUDE.md.
-5. No final, resuma para mim em portugues simples o que mudou.
+5. Antes de enviar ao GitHub, rode `git pull --rebase` e os testes de novo
+   (a outra pessoa pode ter enviado algo). Se tudo passar, `git push`.
+   Se aparecer conflito que nao seja no diario ou nas decisoes, pare e avise.
+6. No final, resuma para mim em portugues simples o que mudou.

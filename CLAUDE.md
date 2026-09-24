@@ -8,7 +8,21 @@ simples o que foi feito e por quê.
 
 ## Fluxo de trabalho
 
+O projeto é desenvolvido por duas pessoas, em duas máquinas. Ver `docs/decisoes.md` D-017.
+
+- **Antes de começar qualquer tarefa:** `git pull` na `main`, para trabalhar
+  sobre a versão mais nova.
 - Ao finalizar cada tarefa, o merge para a branch `main` é automático.
+- **Antes de enviar para o GitHub:** rode os testes. Se falharem, não envie.
+  Depois `git pull --rebase` e rode os testes de novo, porque a outra pessoa
+  pode ter mudado algo no meio do caminho.
+- Nada que só vale para uma máquina entra nos arquivos compartilhados
+  (caminhos de pasta, chaves, senhas). Isso vai no `.env` ou no
+  `CLAUDE.local.md`, que ficam fora do Git.
+- Dependência nova (pacote para instalar) só com registro em
+  `docs/decisoes.md` e instrução de instalação no README. Senão o bot quebra
+  na máquina da outra pessoa.
+- No `docs/diario.md`, comece cada entrada com a data e o nome de quem fez.
 
 ## Regras
 
@@ -25,11 +39,14 @@ simples o que foi feito e por quê.
 
 ## Comandos
 
-O Python **não está no PATH**. Use o caminho completo:
+O Python **não está no PATH** e fica num lugar diferente em cada máquina.
+Use o primeiro destes que existir:
 
-```
-C:\Users\Admin\AppData\Local\Programs\Python\Python312\python.exe
-```
+1. O que estiver indicado no `CLAUDE.local.md` desta máquina, se houver.
+2. `.venv\Scripts\python.exe` (ambiente do próprio projeto).
+3. `C:\Users\Admin\AppData\Local\Programs\Python\Python312\python.exe`
+
+Nos comandos abaixo, `python` quer dizer esse executável.
 
 - Rodar os testes: `python -m pytest -q`
 - Ver a cobertura da API e o custo em créditos: `python -m src.main --diagnostico`

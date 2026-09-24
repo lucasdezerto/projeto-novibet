@@ -7,3 +7,6 @@ dados/
 *.sqlite3
 .venv/
 venv/
+
+# Instrucoes do Claude Code que valem so para uma maquina
+CLAUDE.local.md

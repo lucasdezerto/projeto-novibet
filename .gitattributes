@@ -1,0 +1,4 @@
+# Os dois desenvolvedores acrescentam entradas nestes arquivos. "union" junta
+# as duas versoes em vez de parar com conflito. Ver docs/decisoes.md D-017.
+docs/diario.md merge=union
+docs/decisoes.md merge=union

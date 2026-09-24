@@ -295,6 +295,31 @@ Perguntar ao suporte antes de assinar.
 
 ---
 
+## D-017 — Duas pessoas, duas máquinas, uma `main`
+**Data:** 2026-09-24
+**Contexto:** o projeto passou a ter dois desenvolvedores em máquinas
+diferentes, um deles não técnico. O CLAUDE.md tinha o caminho do Python de uma
+máquina só, o que quebrava os comandos na outra.
+
+**Decisão:**
+1. **Nada específico de máquina nos arquivos compartilhados.** O CLAUDE.md
+   lista onde procurar o Python, em ordem. O que vale só para uma máquina fica
+   no `CLAUDE.local.md` (fora do Git), e as chaves continuam no `.env`.
+2. **Ambiente do projeto em `.venv`** para máquinas novas. A máquina original
+   continua com o Python que já tinha, sem precisar fazer nada.
+3. **`git pull` antes de começar; testes + `git pull --rebase` + testes antes
+   de enviar.** A `main` fica sempre com os testes passando.
+4. **`docs/diario.md` e `docs/decisoes.md` usam junção automática**
+   (`merge=union` no `.gitattributes`): os dois acrescentam entradas nesses
+   arquivos e isso não deve virar conflito para quem não é técnico.
+5. **Dependência nova só com registro aqui e instrução no README.**
+
+**Motivo:** quem não é técnico não consegue resolver conflito de Git nem
+descobrir por que um comando parou de funcionar. O padrão garante que a
+máquina dele continue funcionando sem nenhuma ação da parte dele.
+
+---
+
 ## D-009 — Nenhuma dependência externa além do pytest
 **Data:** 2026-09-23
 **Decisão:** o bot roda só com a biblioteca padrão do Python.
