@@ -230,11 +230,13 @@ a mesma plataforma nos vários mercados.
 Se o atraso for característica do motor de precificação da casa, a versão grega
 mostra o mesmo comportamento — e esse dado está à venda, sem bloqueio nenhum.
 
-**Passo 1 — pegar a chave** (só você pode fazer isso; eu não crio contas):
+**Passo 1 — conseguir uma chave.** O tier gratuito está **pausado por tempo
+indeterminado**, e mesmo aberto ele só dá casas recreativas — a referência
+(Betfair Exchange / ON Sharp) exige plano pago. O plano **Solo (R$359/mês,
+2 casas)** cobre o teste: Novibet GR + Betfair Exchange. Antes de assinar,
+confirme com o suporte se você escolhe quais são as 2 casas.
 
-1. Entre em https://odds-api.io e crie a conta gratuita (100 req/hora, 500/dia,
-   sem cartão).
-2. Copie a chave para o `.env`:
+Com a chave em mãos, ponha no `.env`:
 
 ```
 ODDS_API_IO_KEY=sua_chave_aqui

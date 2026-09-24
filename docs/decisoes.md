@@ -270,6 +270,29 @@ observada de outro jeito.
 config (`fontes.odds_api_io.ativo: false`), e `--medir-atraso` para ler o
 resultado.
 
+**Atualização 24/09 — o tier gratuito não serve (e nem existe agora):**
+
+1. **"As novas chaves de API gratuitas estão pausadas por tempo
+   indeterminado."** Chaves gratuitas antigas continuam ativas.
+2. Mesmo se estivesse aberto, o plano gratuito dá **"2 casas recreativas"** e
+   **"casas sharp e exchanges exigem plano pago"**. A Novibet é recreativa
+   (não está na lista de restritas), mas a **referência** — Betfair Exchange,
+   ON Sharp — é justamente o que o gratuito não entrega.
+
+**Preços (plano mensal, cobrado em R$):** Solo R$359 (2 casas), Starter R$729
+(5), Growth R$1.299 (10), Pro R$1.699 (15).
+
+**O plano Solo basta para o teste:** as 2 casas seriam **Novibet GR + Betfair
+Exchange** (ou ON Sharp). Vale insistir em tirar as duas do **mesmo provedor**:
+assim os jogos são exatamente os mesmos dos dois lados, com o mesmo id de
+evento. Usar a referência da The Odds API sairia de graça, mas a cobertura de
+tênis dela é por torneio e pode simplesmente não ter os mesmos jogos —
+ficaríamos sem com quem comparar.
+
+**A confirmar antes de pagar:** a página não diz se o cliente **escolhe** quais
+são as 2 casas do Solo, e não achei menção a teste grátis nem a reembolso.
+Perguntar ao suporte antes de assinar.
+
 ---
 
 ## D-009 — Nenhuma dependência externa além do pytest
